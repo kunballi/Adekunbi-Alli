@@ -1,0 +1,40 @@
+
+1. Branching Strategy
+The branching strategy we use is called feature branch or dev branch. A developer creates a separate branch for a new feature or change, so unfinished work does not affect main and it allows parallel development which means more than one person can work on the same branch at the same time without affecting one another
+ This is created so that we can work on it to do any sort of modification from our local branch, then it will be push to the remote feature branch in which a review will be done by reviewers before it can be merged into main.
+2. DevOps Lifecycle
+The core stages are:
+1.	Plan: Understand the requirement and decide what needs to be built or changed.
+2.	Develop: Write the code and push to github on a feature branch.
+3.	Build: Prepare the application for deployment. For Java, this includes compiling, running unit tests, and packaging the application into a .jar file.
+4.	Deploy: Put the application in the target environment, configure its dependencies, and start it.
+5.	Test: Check the new functionality, existing functionality, and application performance.
+6.	Release: Approve the tested version for production.
+7.	Operate and Monitor: Keep the application running, monitor its behaviour, and use feedback to plan improvements.
+3. MLOps Lifecycle
+MLOps follows a similar process, but it also includes data preparation, model training, and evaluation.
+1.	Data Collection: Gather the dataset needed for the model.
+2.	ML Development: Write the code for processing data, training the model, and making predictions.
+3.	Build: Prepare the code and its dependencies so the ML pipeline can run.
+4.	Train: Use the training dataset to teach the model.
+5.	Evaluate and Test: Check how well the model predicts using separate evaluation data. 80% of the data is used for training and 20% for evaluation.
+6.	Deploy for Inference: Make the trained model available to receive input and return predictions.
+7.	Monitor: Observe how the model performs with live data and identify when improvements or retraining are needed.
+
+
+
+4. Code Promotion and Testing
+Code promotion means moving a tested application or model through environments until it is ready for customers:
+Development → QA → Stage/UAT → Production
+Each environment provides another check before release.
+For the DevOps application flow:
+•	Unit testing in development: Checks individual functions or small parts of the code and its done locally before committing and push to github on the feature branch.
+•	Functional testing on the feature version: build the code, deploy and then test- this checks that the new feature behaves as required before merging into main. This .is done in the QA environment
+•	Regression testing after merging into main: build the code, deploy and then test -checks that existing features still work with the new changes. This .is done in the QA environment
+•	Performance/load testing in stage:  deploy and test-checks how the application behaves under expected traffic and heavier workloads. This .is done in the stage or (UAT):  environment
+For the MLOps flow:
+•	Pipeline validation in development: Its done after data collection, we build and test, test   checks that the steps connect and run, accept input, and produce output. It checks execution before judging prediction quality. This is done in the feature branch in DEV environment and we merge to main branch
+Model validation in QA: in the main, we build and test, test-evaluates the trained model against separate data to check prediction quality. 80% of the data is used for training and 20% for evaluation. This testing is done in the QA environment.
+
+Inference testing in stage: This testing is done in the STAGE environment after deployment. It checks that the deployed model receives requests, returns predictions, and connects correctly with other application components. 
+Shadow testing in production: This testing is done in the PROD environment after deployment, It confirms if the ml is responding when we pass live data instead of historic data to see if its working properly, but the customer will not access it, This allows its behavior to be checked before release.
