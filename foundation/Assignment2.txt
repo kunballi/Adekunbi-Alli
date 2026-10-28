@@ -1,0 +1,59 @@
+1.Why do you need to build a Docker image for your application?
+
+You build a Docker image to package your application with everything it needs to run, making deployment repeatable across development, testing, and production.
+ Without Docker, you repeat many setup steps on each server:
+•	Create an application user and folders.
+•	Install the required runtime, OS packages, and libraries.
+•	Copy the application, startup scripts, and health checks.
+•	Configure permissions and start the application.
+A Docker image captures that setup once. It contains your application, its runtime and dependencies, required folders, and startup instructions.
+
+
+
+
+
+2. What are the pointers you need to collect before developing a Dockerfile to build an image?
+Pointers to collect before developing a Dockerfile to build an image:
+
+Instruction                                Information to collect                                            Example    
+
+
+Application type                          Java, Node.js, Python, .NET, or another stack?
+
+FROM                                       Required operating system, runtime, and version             Ubuntu with java 17
+
+RUN                                         OS packages and setup commands needed                      Install Java,
+                                                                                                     create user,and app folder
+                                                                                                                                                                                                                                                                                  .                                                                                                                                       
+USER                          user that should run the application and required permissions            Wezatech
+
+
+WORKDIR                 Application directory inside the image                                           /etc/app
+
+
+COPY         Application artifact location and destination                                               copy the JAR from 
+                                                                                                        ./javabuild/target/
+
+
+EXPOSE       Port the application listens on                                                            8080
+
+
+ENTRYPOIN/CMD   Startup command and how users should override it                                    ./startup.sh
+
+
+
+
+3. Explain the structure of your Docker image.
+
+ A Docker image packages an application with the files and dependencies it needs to run consistently across environments. Its structure can be explained using four logical parts. These parts do not mean that every Docker image has exactly four physical layers; Docker creates its actual layers from the build instructions.
+1.	Operating system or base image
+This provides the foundation for the application, including operating system files and libraries. Examples include Ubuntu and Alpine. Containers share the host’s kernel rather than containing a complete operating system.
+2.	Framework, runtime, and dependencies
+This includes the software required to run the application, such as Java JRE, Python, or Node.js, together with any required libraries. Build tools, such as a JDK or Go compiler, may be used during image creation and left out of the final image when they are no longer needed.
+3.	Application files
+This contains the application’s code or compiled artifact. For example, a Spring Boot application would include its JAR file. The command used to launch the application is defined separately through instructions such as ENTRYPOINT or CMD.
+4.	Supporting scripts
+These may include startup, shutdown, or health check scripts. They help prepare, start, stop, or check the application. Scripts are optional because some applications can start directly without them.
+Environment-specific configuration is usually supplied when the container starts. This includes database addresses, cache endpoints, Kafka brokers, log levels, and credentials required in QA, UAT, or production.
+In Kubernetes, a ConfigMap can supply non-sensitive settings, while Secrets or an external secrets manager can supply passwords, tokens, and other sensitive values. This configuration is supplied at runtime; it is not an additional image layer.
+For example, an application image might contain Ubuntu, Java 17, the application JAR, and a startup script. The same image can then run in QA, UAT, and production by receiving the appropriate configuration for each environment. This allows the team to build the image once and deploy the same tested application consistently.
