@@ -1,46 +1,39 @@
 1.Why do you need to build a Docker image for your application?
 
-You build a Docker image to package your application with everything it needs to run, making deployment repeatable across development, testing, and production.
- Without Docker, you repeat many setup steps on each server:
-•	Create an application user and folders.
-•	Install the required runtime, OS packages, and libraries.
-•	Copy the application, startup scripts, and health checks.
-•	Configure permissions and start the application.
-A Docker image captures that setup once. It contains your application, its runtime and dependencies, required folders, and startup instructions.
 
+We build a Docker image to package an application with its runtime, dependencies, and supporting files so it runs consistently across QA, UAT, and production.
+
+Compared with separate VM-based deployments, containers generally start faster and use fewer resources because they share the host’s operating system kernel. Versioned images also make deployment repeatable and allow easier rollback to an earlier application version.
 
 
 
 
 2. What are the pointers you need to collect before developing a Dockerfile to build an image?
-Pointers to collect before developing a Dockerfile to build an image:
 
-Instruction                                Information to collect                                            Example    
+Before developing a Dockerfile, I collect the requirements for these five parts:
 
+1. OS/base image
+   Provides the operating system files and libraries needed by the application.
+   Dockerfile instruction: FROM
+   Example: FROM ubuntu
+2. Framework/runtime
+   Provides the runtime and dependencies needed to run the application, such as Java 17.
+   Dockerfile instruction: RUN
+   Example: RUN apt-get update && apt-get install -y openjdk-17-jre-headless
+3. Application
+   Contains the application artifact, such as the Java JAR file.
+   Dockerfile instruction: COPY
+   Example: COPY ./javabuild/target/myapp.jar /etc/app/myapp.jar
+4. Scripts
+   Contains scripts used to start, stop, or check the application.
+   Dockerfile instructions: COPY and ENTRYPOINT or CMD
+   Example: COPY ./javabuild/startup.sh /etc/app/startup.sh
+   Example: ENTRYPOINT ["/bin/sh", "/etc/app/startup.sh"]
+5. Configuration
+   Provides environment-specific settings, such as database addresses, passwords, and log levels.
+   Supplied at runtime through environment variables, ConfigMaps, or Secrets.
 
-Application type                          Java, Node.js, Python, .NET, or another stack?
-
-FROM                                       Required operating system, runtime, and version             Ubuntu with java 17
-
-RUN                                         OS packages and setup commands needed                      Install Java,
-                                                                                                     create user,and app folder
-                                                                                                                                                                                                                                                                                  .                                                                                                                                       
-USER                          user that should run the application and required permissions            Wezatech
-
-
-WORKDIR                 Application directory inside the image                                           /etc/app
-
-
-COPY         Application artifact location and destination                                               copy the JAR from 
-                                                                                                        ./javabuild/target/
-
-
-EXPOSE       Port the application listens on                                                            8080
-
-
-ENTRYPOIN/CMD   Startup command and how users should override it                                    ./startup.sh
-
-
+    
 
 
 3. Explain the structure of your Docker image.
