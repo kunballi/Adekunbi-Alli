@@ -1,0 +1,33 @@
+ 1. Why do you need Kubernetes in your application lifecycle?
+
+ Kubernetes helps you deploy, manage, and scale containerized applications throughout their lifecycle.
+A Docker image packages your application and its dependencies. Kubernetes manages the containers running that image across a group of servers.
+Kubernetes is useful when you need to operate multiple containers reliably, especially across several servers. A small application with simple deployment requirements may not need it.
+You use Kubernetes for the following reasons:
+1.	Automated deployment: Kubernetes runs your application containers using the image and configuration you specify.
+2.	Scaling: You can increase or decrease the number of application instances to match demand. Kubernetes can also automate scaling using configured metrics.
+3.	Self-healing: Kubernetes restarts failed containers and replaces failed application instances. It uses health checks to determine when an application needs attention or is ready to receive traffic.
+4.	Load balancing: Kubernetes provides a stable way to reach application instances and distributes traffic across those that are ready.
+5.	Application updates and rollbacks: Kubernetes supports rolling updates, replacing application instances gradually. If an update causes problems, you can roll back to an earlier deployment version.
+6.	Environment-specific configuration: You can deploy the same application image in QA, UAT, and production while supplying different settings through ConfigMaps and Secrets.
+7.	Resource management: Kubernetes schedules applications across servers based on their resource requirements and available capacity. You can define CPU and memory requests and limits.
+8.	Persistent storage: Kubernetes can connect applications to persistent storage so that required data survives container replacement.
+
+
+
+To deploy an application in Kubernetes, you choose objects based on how the application runs, how users access it, and what configuration or storage it needs.
+1.	Pod: A Pod runs one or more containers together. For example, it can run your Spring Boot application container. You usually let a Deployment create and manage Pods instead of creating them directly.
+2.	ReplicaSet: A ReplicaSet keeps the desired number of identical application Pods running. If a Pod fails or is deleted, it creates a replacement.
+3.	Deployment: A Deployment manages the application’s Pods and keeps the required number of instances running. It supports rolling updates and rollbacks. It is commonly used for stateless applications, such as web applications and APIs.
+4.	Service: A Service provides a stable network address for accessing your application because Pods can be replaced and their IP addresses can change. It directs traffic to the appropriate application Pods.
+5.	ConfigMap: A ConfigMap stores non-sensitive configuration, such as database hostnames, Kafka broker addresses, and log levels. It allows the same application image to run with different settings in QA, UAT, and production.
+6.	Secret: A Secret supplies sensitive information, such as database passwords, API tokens, and TLS certificates. Secrets need appropriate access controls and encryption settings; base64 encoding alone does not protect them.
+7.	PersistentVolumeClaim: A PersistentVolumeClaim requests persistent storage for applications that need to retain files after a Pod is replaced. The storage can be provisioned dynamically or provided through an existing Persistent Volume.
+8.	Namespace: A Namespace groups and scopes application resources within a cluster. It helps organize applications or environments and supports access controls and resource quotas.
+9.	Persistent Volume: is an object that represents persistent storage available in the cluster. The underlying storage could come from a cloud disk, network storage, or a local disk.
+It stores data that needs to survive Pod replacement. For example, a database can use persistent storage so its data remains when its Pod is replaced.
+The application usually requests storage through a PersistentVolumeClaim (PVC):Pod → uses a PVC → bound to a PV → backed by storage
+PV = the storage available.
+PVC = the application’s request for storage.
+
+

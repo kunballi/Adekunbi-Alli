@@ -1,0 +1,52 @@
+1.Why do you need to build a Docker image for your application?
+
+
+We build a Docker image to package an application with its runtime, dependencies, and supporting files so it runs consistently across QA, UAT, and production.
+
+Compared with separate VM-based deployments, containers generally start faster and use fewer resources because they share the host’s operating system kernel. Versioned images also make deployment repeatable and allow easier rollback to an earlier application version.
+
+
+
+
+2. What are the pointers you need to collect before developing a Dockerfile to build an image?
+
+Before developing a Dockerfile, I collect the requirements for these five parts:
+
+1. OS/base image
+   Provides the operating system files and libraries needed by the application.
+   Dockerfile instruction: FROM
+   Example: FROM ubuntu
+2. Framework/runtime
+   Provides the runtime and dependencies needed to run the application, such as Java 17.
+   Dockerfile instruction: RUN
+   Example: RUN apt-get update && apt-get install -y openjdk-17-jre-headless
+3. Application
+   Contains the application artifact, such as the Java JAR file.
+   Dockerfile instruction: COPY
+   Example: COPY ./javabuild/target/myapp.jar /etc/app/myapp.jar
+4. Scripts
+   Contains scripts used to start, stop, or check the application.
+   Dockerfile instructions: COPY and ENTRYPOINT or CMD
+   Example: COPY ./javabuild/startup.sh /etc/app/startup.sh
+   Example: ENTRYPOINT ["/bin/sh", "/etc/app/startup.sh"]
+5. Configuration
+   Provides environment-specific settings, such as database addresses, passwords, and log levels.
+   Supplied at runtime through environment variables, ConfigMaps, or Secrets.
+
+    
+
+
+3. Explain the structure of your Docker image.
+
+ A Docker image packages an application with the files and dependencies it needs to run consistently across environments. Its structure can be explained using four logical parts. These parts do not mean that every Docker image has exactly four physical layers; Docker creates its actual layers from the build instructions.
+1.	Operating system or base image
+This provides the foundation for the application, including operating system files and libraries. Examples include Ubuntu and Alpine. Containers share the host’s kernel rather than containing a complete operating system.
+2.	Framework, runtime, and dependencies
+This includes the software required to run the application, such as Java JRE, Python, or Node.js, together with any required libraries. Build tools, such as a JDK or Go compiler, may be used during image creation and left out of the final image when they are no longer needed.
+3.	Application files
+This contains the application’s code or compiled artifact. For example, a Spring Boot application would include its JAR file. The command used to launch the application is defined separately through instructions such as ENTRYPOINT or CMD.
+4.	Supporting scripts
+These may include startup, shutdown, or health check scripts. They help prepare, start, stop, or check the application. Scripts are optional because some applications can start directly without them.
+Environment-specific configuration is usually supplied when the container starts. This includes database addresses, cache endpoints, Kafka brokers, log levels, and credentials required in QA, UAT, or production.
+In Kubernetes, a ConfigMap can supply non-sensitive settings, while Secrets or an external secrets manager can supply passwords, tokens, and other sensitive values. This configuration is supplied at runtime; it is not an additional image layer.
+For example, an application image might contain Ubuntu, Java 17, the application JAR, and a startup script. The same image can then run in QA, UAT, and production by receiving the appropriate configuration for each environment. This allows the team to build the image once and deploy the same tested application consistently.
